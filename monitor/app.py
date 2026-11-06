@@ -26,6 +26,7 @@ class App:
         root.title("Health & Mana Monitor")
         root.resizable(False, False)
         self.running = False
+        self.hunting_window = None
         self.gate = AlertGate()
         self.sounds = queue.Queue(maxsize=2)
         threading.Thread(target=self.sound_worker, daemon=True).start()
@@ -55,10 +56,18 @@ class App:
         ttk.Button(frame, text="Start / Apply", command=self.start).grid(row=4, column=0, pady=12)
         ttk.Button(frame, text="Stop", command=self.stop).grid(row=4, column=1)
         ttk.Button(frame, text="Save settings", command=self.persist).grid(row=4, column=2)
+        ttk.Button(frame, text="Route hunting…", command=self.open_hunting).grid(row=6, column=0, columnspan=4, pady=8)
         self.status = tk.StringVar(value="Select both regions, then Start. Alerts repeat every 5 seconds while low.")
         ttk.Label(frame, textvariable=self.status, wraplength=550).grid(row=5, column=0, columnspan=4)
         root.protocol("WM_DELETE_WINDOW", self.close)
         root.after(250, self.tick)
+
+    def open_hunting(self):
+        self.stop()
+        if not self.persist():
+            return
+        from .hunting_ui import HuntingWindow
+        self.hunting_window = HuntingWindow(self)
 
     def sound_worker(self):
         while True:
@@ -109,6 +118,8 @@ class App:
         self.status.set("Monitoring. Keep the game visible; move this window away from the bars.")
 
     def stop(self):
+        if self.hunting_window:
+            self.hunting_window.stop("Stopped from monitor")
         self.running = False
         self.status.set("Stopped.")
 
@@ -196,6 +207,8 @@ class App:
         self.root.after(250, self.tick)
 
     def close(self):
+        if self.hunting_window:
+            self.hunting_window.close()
         if self.persist():
             self.running = False
             self.root.destroy()

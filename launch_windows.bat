@@ -1,6 +1,16 @@
 @echo off
 setlocal
 cd /d "%~dp0"
+if not exist "requirements.txt" (
+  echo The app files are missing. Right-click the downloaded ZIP, choose Extract All, then run this launcher from the extracted folder.
+  pause
+  exit /b 1
+)
+if not exist "monitor\app.py" (
+  echo The monitor folder is missing. Extract the entire ZIP before running this launcher.
+  pause
+  exit /b 1
+)
 if exist ".venv\Scripts\python.exe" goto run
 py -3 --version >nul 2>&1
 if errorlevel 1 (
