@@ -1,6 +1,9 @@
 # Tibia Origins Route Hunter & Health/Mana Monitor for Windows
 
-A Python desktop app with a health/mana monitor and an experimental screen-driven route hunter for Tibia Origins OT. The monitor reads two visible horizontal screen bars with Pillow and shows estimated percentages. Select health and mana regions, choose their fill colors, and set separate low-resource sound thresholds. It reads screenshots only and does not read game memory. Monitor mode sends no game input; Route hunting mode sends configured keys and minimap clicks to the bound foreground game window.
+**New: [Coordinate routes setup guide](COORDINATE_SETUP.md).** Origins terminal access has been verified by the user for position, exact HP/mana, and current target. The new optional Lua bridge connects these values to Python and adds named coordinate routes. Its complete live-client setup is still experimental; the guide starts with observation and a short Walk only test.
+
+
+A Python desktop app with a health/mana monitor and an experimental screen-driven route hunter for Tibia Origins OT. The monitor reads two visible horizontal screen bars with Pillow and shows estimated percentages. Select health and mana regions, choose their fill colors, and set separate low-resource sound thresholds. The original monitor and pixel-route modes read screenshots; coordinate mode uses a companion script loaded through the client’s Lua terminal. The Python app does not read process memory. Monitor mode sends no game input; Route hunting mode sends configured keys and minimap clicks to the bound foreground game window.
 
 ## Download and run on Windows (first time)
 

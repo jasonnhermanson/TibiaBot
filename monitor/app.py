@@ -27,6 +27,7 @@ class App:
         root.resizable(False, False)
         self.running = False
         self.hunting_window = None
+        self.coordinate_window = None
         self.gate = AlertGate()
         self.sounds = queue.Queue(maxsize=2)
         threading.Thread(target=self.sound_worker, daemon=True).start()
@@ -57,10 +58,18 @@ class App:
         ttk.Button(frame, text="Stop", command=self.stop).grid(row=4, column=1)
         ttk.Button(frame, text="Save settings", command=self.persist).grid(row=4, column=2)
         ttk.Button(frame, text="Route hunting…", command=self.open_hunting).grid(row=6, column=0, columnspan=4, pady=8)
+        ttk.Button(frame, text="Coordinate routes (Origins)…", command=self.open_coordinates).grid(row=7, column=0, columnspan=4, pady=6)
         self.status = tk.StringVar(value="Select both regions, then Start. Alerts repeat every 5 seconds while low.")
         ttk.Label(frame, textvariable=self.status, wraplength=550).grid(row=5, column=0, columnspan=4)
         root.protocol("WM_DELETE_WINDOW", self.close)
         root.after(250, self.tick)
+
+    def open_coordinates(self):
+        self.stop()
+        if not self.persist():
+            return
+        from .coordinate_ui import CoordinateWindow
+        self.coordinate_window = CoordinateWindow(self)
 
     def open_hunting(self):
         self.stop()
@@ -118,6 +127,8 @@ class App:
         self.status.set("Monitoring. Keep the game visible; move this window away from the bars.")
 
     def stop(self):
+        if self.coordinate_window:
+            self.coordinate_window.stop("Stopped from monitor")
         if self.hunting_window:
             self.hunting_window.stop("Stopped from monitor")
         self.running = False
@@ -207,6 +218,8 @@ class App:
         self.root.after(250, self.tick)
 
     def close(self):
+        if self.coordinate_window:
+            self.coordinate_window.close()
         if self.hunting_window:
             self.hunting_window.close()
         if self.persist():
